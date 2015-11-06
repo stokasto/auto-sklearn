@@ -148,7 +148,8 @@ class AutoML(multiprocessing.Process, BaseEstimator):
                  resampling_strategy_arguments=None,
                  delete_tmp_folder_after_terminate=False,
                  delete_output_folder_after_terminate=False,
-                 shared_mode=False):
+                 shared_mode=False,
+                 python_path=""):
         super(AutoML, self).__init__()
 
         self._tmp_dir = tmp_dir
@@ -187,6 +188,7 @@ class AutoML(multiprocessing.Process, BaseEstimator):
 
         self._debug_mode = debug_mode
         self._backend = Backend(self._output_dir, self._tmp_dir)
+        self._python_path = python_path
 
     def start_automl(self, parser):
         self._backend.save_start_time(self._seed)
@@ -425,7 +427,8 @@ class AutoML(multiprocessing.Process, BaseEstimator):
                              seed=self._seed,
                              resampling_strategy=self._resampling_strategy,
                              resampling_strategy_arguments=self._resampling_strategy_arguments,
-                             shared_mode=self._shared_mode)
+                             shared_mode=self._shared_mode,
+                             python_path=self._python_path)
 
         # == RUN ensemble builder
         proc_ensembles = self.run_ensemble_builder()
@@ -490,7 +493,8 @@ class AutoML(multiprocessing.Process, BaseEstimator):
                 ensemble_nbest=self._ensemble_nbest,
                 seed=self._seed,
                 shared_mode=self._shared_mode,
-                max_iterations=max_iterations
+                max_iterations=max_iterations,
+                python_path=self._python_path
             )
             self._stopwatch.stop_task(task_name)
             return proc_ensembles
@@ -527,6 +531,16 @@ class AutoML(multiprocessing.Process, BaseEstimator):
             else:
                 prediction = model.predict_proba(X_)
             predictions.append(prediction * weight)
+
+        if not predictions:
+            for identifier in self.models_:
+                model = self.models_[identifier]
+                X_ = X.copy()
+                if self._task in REGRESSION_TASKS:
+                    prediction = model.predict(X_)
+                else:
+                    prediction = model.predict_proba(X_)
+                predictions.append(prediction)
 
         predictions = np.sum(np.array(predictions), axis=0)
         return predictions

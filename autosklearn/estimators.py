@@ -104,7 +104,8 @@ class AutoSklearnClassifier(autosklearn.automl.AutoML):
                  output_folder=None,
                  delete_tmp_folder_after_terminate=True,
                  delete_output_folder_after_terminate=True,
-                 shared_mode=False):
+                 shared_mode=False,
+                 python_path=""):
 
         # Check this before _prepare_create_folders assigns random output
         # directories
@@ -149,7 +150,8 @@ class AutoSklearnClassifier(autosklearn.automl.AutoML):
             delete_tmp_folder_after_terminate=delete_tmp_folder_after_terminate,
             delete_output_folder_after_terminate=
             delete_output_folder_after_terminate,
-            shared_mode=shared_mode)
+            shared_mode=shared_mode,
+            python_path=python_path)
 
     @staticmethod
     def _prepare_create_folders(tmp_dir, output_dir, shared_mode):
@@ -175,8 +177,8 @@ class AutoSklearnClassifier(autosklearn.automl.AutoML):
                 os.makedirs(self._tmp_dir)
         except OSError:
             print("Did not create tmp/output_dir, already exists")
-            if not self._shared_mode:
-                raise
+            #if not self._shared_mode:
+            #    raise
 
     def fit(self, X, y,
             task=MULTICLASS_CLASSIFICATION,

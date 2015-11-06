@@ -10,7 +10,9 @@ from autosklearn.util import logging_ as logging
 def run_smac(tmp_dir, basename, time_for_task, ml_memory_limit,
               data_manager_path, configspace_path, initial_configurations,
               per_run_time_limit, watcher, backend, seed,
-              resampling_strategy, resampling_strategy_arguments, shared_mode):
+              resampling_strategy, resampling_strategy_arguments, shared_mode,
+              python_path):
+    
     logger = logging.get_logger(__name__)
 
     task_name = 'runSmac'
@@ -25,7 +27,8 @@ def run_smac(tmp_dir, basename, time_for_task, ml_memory_limit,
                                               configspace_path,
                                               instance_file_path,
                                               test_instance_file_path,
-                                              basename)
+                                              basename,
+                                              python_path)
 
     # = Start SMAC
     time_smac = max(0, time_for_task - watcher.wall_elapsed(basename))
@@ -139,12 +142,13 @@ def namespace_to_automl_format(namespace):
     return strategy, arguments
 
 
-def _get_algo_exec(runsolver_limit, runsolver_delay, memory_limit):
+def _get_algo_exec(runsolver_limit, runsolver_delay, memory_limit, python_path):
     # Create call to autosklearn
     path_to_wrapper = os.path.dirname(
         os.path.abspath(autosklearn.cli.__file__))
     wrapper_exec = os.path.join(path_to_wrapper, 'SMAC_interface.py')
-    call = 'python %s ' % wrapper_exec
+    python = os.path.join(python_path, 'python')
+    call = '%s %s ' % (python, wrapper_exec)
 
     # Runsolver does strange things if the time limit is negative. Set it to
     # be at least one (0 means infinity)
@@ -158,7 +162,8 @@ def _get_algo_exec(runsolver_limit, runsolver_delay, memory_limit):
 
 def _write_scenario_file(limit, cutoff_time, memory_limit, tmp_dir,
                          searchspace, instance_file_path,
-                         test_instance_file_path, dataset_name):
+                         test_instance_file_path, dataset_name,
+                         python_path):
     if limit <= 0:
     # It makes no sense to start building ensembles_statistics
         return
@@ -172,7 +177,7 @@ def _write_scenario_file(limit, cutoff_time, memory_limit, tmp_dir,
     runsolver_hardlimit_delay = 30
 
     algo_exec = _get_algo_exec(runsolver_softlimit, runsolver_hardlimit_delay,
-                               memory_limit)
+                               memory_limit, python_path)
 
     scenario = {
         'cli-log-all-calls': 'false',

@@ -16,21 +16,22 @@ def submit_call(call, seed, logger, log_dir=None):
     call = shlex.split(call)
 
     if log_dir is None:
-        proc = subprocess.Popen(call, stdout=open(os.devnull, 'w'))
+        proc = subprocess.Popen(call)
+        #proc = subprocess.Popen(call, stdout=open(os.devnull, 'w'))
     else:
         proc = subprocess.Popen(
-            call,
-            stdout=open(
-                os.path.join(log_dir, 'ensemble_out_%d.log' % seed), 'w'),
-            stderr=open(
-                os.path.join(log_dir, 'ensemble_err_%d.log' % seed), 'w'))
+            call)#,
+            #stdout=open(
+            #    os.path.join(log_dir, 'ensemble_out_%d.log' % seed), 'w'),
+            #stderr=open(
+            #    os.path.join(log_dir, 'ensemble_err_%d.log' % seed), 'w'))
 
     return proc
 
 
 def run_ensemble_builder(tmp_dir, dataset_name, task_type, metric, limit,
                          output_dir, ensemble_size, ensemble_nbest, seed,
-                         shared_mode, max_iterations):
+                         shared_mode, max_iterations, python_path):
     logger = logging.get_logger(__name__)
 
     if limit <= 0 and (max_iterations is None or max_iterations <= 0):
@@ -38,7 +39,8 @@ def run_ensemble_builder(tmp_dir, dataset_name, task_type, metric, limit,
                        "it.")
         # It makes no sense to start building ensembles_statistics
         return
-    ensemble_script = 'python -m autosklearn.ensemble_selection_script'
+    python = os.path.join(python_path, 'python')
+    ensemble_script = '%s -m autosklearn.ensemble_selection_script' %(python)
     runsolver_exec = 'runsolver'
     delay = 5
 

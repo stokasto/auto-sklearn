@@ -19,6 +19,7 @@ def calculate_score(metric, solution, prediction, task):
     return globals()[metric](solution, prediction, task)
 
 
+
 def acc_metric(solution, prediction, task=BINARY_CLASSIFICATION):
     """
     Compute the accuracy.
@@ -116,7 +117,11 @@ def bac_metric(solution, prediction, task=BINARY_CLASSIFICATION):
     return score
 
 
+<<<<<<< HEAD
 def pac_metric(solution, prediction, task=BINARY_CLASSIFICATION):
+=======
+def pac_metric(solution, prediction, task=BINARY_CLASSIFICATION, copy=True):
+>>>>>>> remove now uneeeded seed mechanics
     """
     Probabilistic Accuracy based on log_loss metric.
 
@@ -157,7 +162,11 @@ def pac_metric(solution, prediction, task=BINARY_CLASSIFICATION):
     return score
 
 
+<<<<<<< HEAD
 def f1_metric(solution, prediction, task=BINARY_CLASSIFICATION):
+=======
+def f1_metric(solution, prediction, task=BINARY_CLASSIFICATION, copy=True):
+>>>>>>> remove now uneeeded seed mechanics
     """
     Compute the normalized f1 measure.
 
@@ -218,7 +227,11 @@ def f1_metric(solution, prediction, task=BINARY_CLASSIFICATION):
     return score
 
 
+<<<<<<< HEAD
 def auc_metric(solution, prediction, task=BINARY_CLASSIFICATION):
+=======
+def auc_metric(solution, prediction, task=BINARY_CLASSIFICATION, copy=True):
+>>>>>>> remove now uneeeded seed mechanics
     """
     Normarlized Area under ROC curve (AUC).
 

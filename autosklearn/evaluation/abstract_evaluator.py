@@ -12,7 +12,6 @@ from autosklearn.pipeline.regression import SimpleRegressionPipeline
 from sklearn.dummy import DummyClassifier, DummyRegressor
 
 from autosklearn.constants import *
-from autosklearn.evaluation.util import get_new_run_num
 from autosklearn.util import Backend
 from autosklearn.pipeline.implementations.util import convert_multioutput_multiclass_to_multilabel
 from autosklearn.evaluation.util import calculate_score
@@ -115,7 +114,7 @@ class AbstractEvaluator(object):
             self.predict_function = self.predict_proba
 
         if num_run is None:
-            num_run = get_new_run_num()
+            num_run = 0
         self.num_run = num_run
 
         self.backend = Backend(None, self.output_dir)
@@ -171,7 +170,7 @@ class AbstractEvaluator(object):
         return self.duration, result, self.seed, additional_run_info
 
     def file_output(self):
-        seed = os.environ.get('AUTOSKLEARN_SEED')
+        seed = self.seed
 
         if self.configuration is None:
             # Do not calculate the score when creating dummy predictions!

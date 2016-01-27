@@ -42,17 +42,12 @@ def acc_metric(solution, prediction, task=BINARY_CLASSIFICATION):
     bin_predictions = binarize_predictions(prediction, task)
 
     label_num = solution.shape[1]
-    tn = np.sum(np.multiply((1 - solution), (1 - bin_predictions)))
-    fn = np.sum(np.multiply(solution, (1 - bin_predictions)))
-    tp = np.sum(np.multiply(solution, bin_predictions))
-    fp = np.sum(np.multiply((1 - solution), bin_predictions))
+    tn = np.sum(np.multiply((1 - solution), (1 - bin_predictions)), axis=0, dtype=float)
+    fn = np.sum(np.multiply(solution, (1 - bin_predictions)), axis=0, dtype=float)
+    tp = np.sum(np.multiply(solution, bin_predictions), axis=0, dtype=float)
+    fp = np.sum(np.multiply((1 - solution), bin_predictions), axis=0, dtype=float)
     # Bounding to avoid division by 0, 1e-7 because of float32
     eps = np.float(1e-7)
-    tp = np.sum(tp)
-    fp = np.sum(fp)
-    tn = np.sum(tn)
-    fn = np.sum(fn)
-
     if (task != MULTICLASS_CLASSIFICATION) or (label_num == 1):
         accuracy = (np.sum(tp) + np.sum(tn)) / (
             np.sum(tp) + np.sum(fp) + np.sum(tn) + np.sum(fn)
